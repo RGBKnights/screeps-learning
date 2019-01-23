@@ -1,10 +1,8 @@
-// import assert from 'assert'
+import assert from 'assert'
 // import fs from 'fs-extra-promise'
 // import path from 'path'
 // import _ from 'lodash'
 // import { ScreepsServer, stdHooks } from 'screeps-server-mockup'
-// import * as ReImprove from 'reimprovejs'
-
 import { NeuralNetwork, Model, Academy } from "reimprovejs/dist/reimprove.js"
 
 const TIMEOUT = 1; // mins
@@ -29,7 +27,7 @@ suite('Academy tests', function () {
 
     const numActions = 4;
     const inputSize = 2;                
-    const temporalWindow = 1;             // The window of data which will be sent yo your agent. For instance the x previous inputs, and what actions the agent took
+    const temporalWindow = 2;             // The window of data which will be sent yo your agent. For instance the x previous inputs, and what actions the agent took
 
     const totalInputSize = inputSize * temporalWindow + numActions * temporalWindow + inputSize;
 
@@ -75,53 +73,47 @@ suite('Academy tests', function () {
 
     var lastUpdate = Date.now();
 
-    for (let i = 0; i < 25; i++) {
-      while(true) {
-        // Gather inputs
-        let inputs = [actor.x, actor.y];
-        let distance_before = Math.hypot(target.x-actor.x, target.y-actor.y);
-  
-        // Step the learning
-        let result = await academy.step([{teacherName: teacher, agentsInput: inputs}]);
-  
-        // Take Action
-        if(result !== undefined) {
-          var action = result.get(agent);
-          switch (action) {
-            case 0:
-              actor.x++;
-              break;
-            case 1:
-              actor.x--;
-              break;
-            case 2:
-              actor.y++;
-              break;
-            case 3:
-              actor.y--;
-              break;
-            default:
-              break;
-          }
-        }
-  
-        let distance_after = Math.hypot(target.x-actor.x, target.y-actor.y)
-        let reward = (distance_before == distance_after) ? -0.5 : distance_before - distance_after;
-        academy.addRewardToAgent(agent, reward);
-        // console.info("Actor", `Location: (${actor.x}, ${actor.y}) Reward: ${reward}`);
-  
-        if(actor.x == target.x && actor.y == target.y) {
-          break;
+    let steps = 0;
+    while((actor.x == target.x && actor.y == target.y) == false) {
+      // Gather inputs
+      let inputs = [actor.x, actor.y];
+      let distance_before = Math.hypot(target.x-actor.x, target.y-actor.y);
+
+      // Step the learning
+      let result = await academy.step([{teacherName: teacher, agentsInput: inputs}]);
+
+      // Take Action
+      if(result !== undefined) {
+        steps++;
+        var action = result.get(agent);
+        switch (action) {
+          case 0:
+            actor.x++;
+            break;
+          case 1:
+            actor.x--;
+            break;
+          case 2:
+            actor.y++;
+            break;
+          case 3:
+            actor.y--;
+            break;
+          default:
+            break;
         }
       }
 
-      var now = Date.now();
-      var dt = Math.abs(now - lastUpdate) / 1000;
-      lastUpdate = now;
-
-      target = {x: getRandom(0,10), y: getRandom(0,10) };
-      console.info("Actor", `At target; took: ${(dt % 60)}s`);
+      let distance_after = Math.hypot(target.x-actor.x, target.y-actor.y)
+      let reward = (distance_before == distance_after) ? -0.5 : distance_before - distance_after;
+      academy.addRewardToAgent(agent, reward);
+      // console.info("Actor", `Location: (${actor.x}, ${actor.y}) Reward: ${reward}`);
     }
+
+    var now = Date.now();
+    var dt = Math.abs(now - lastUpdate) / 1000;
+
+    console.info(`Actor took ${(dt % 60)}s and ${steps} steps.`);
 
   });
 
