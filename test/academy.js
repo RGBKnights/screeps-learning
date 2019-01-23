@@ -26,8 +26,8 @@ suite('Academy tests', function () {
     };
 
     const numActions = 4;
-    const inputSize = 2;                
-    const temporalWindow = 2;             // The window of data which will be sent yo your agent. For instance the x previous inputs, and what actions the agent took
+    const inputSize = 4;                
+    const temporalWindow = 1;             // The window of data which will be sent yo your agent. For instance the x previous inputs, and what actions the agent took
 
     const totalInputSize = inputSize * temporalWindow + numActions * temporalWindow + inputSize;
 
@@ -76,8 +76,8 @@ suite('Academy tests', function () {
     let steps = 0;
     while((actor.x == target.x && actor.y == target.y) == false) {
       // Gather inputs
-      let inputs = [actor.x, actor.y];
       let distance_before = Math.hypot(target.x-actor.x, target.y-actor.y);
+      let inputs = [actor.x, actor.y, target.x, target.y];
 
       // Step the learning
       let result = await academy.step([{teacherName: teacher, agentsInput: inputs}]);
@@ -103,6 +103,8 @@ suite('Academy tests', function () {
             break;
         }
       }
+
+      //TODO: Create a bounds that the actor can not moved beyond...
 
       let distance_after = Math.hypot(target.x-actor.x, target.y-actor.y)
       let reward = (distance_before == distance_after) ? -0.5 : distance_before - distance_after;
