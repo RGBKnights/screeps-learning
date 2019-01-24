@@ -6,12 +6,20 @@ import assert from 'assert'
 import { NeuralNetwork, Model, Academy } from "reimprovejs/dist/reimprove.js"
 
 const TIMEOUT = 1; // mins
+const MAP_SIZE = 10;
 
-function getRandom(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
+function randomPoint()
+{
+  let min = 0;
+  let max = MAP_SIZE;
+  return Math.floor(Math.random()*(max-min+1)+min);
 }
+
+function jumpDistance(x1, y1, x2, y2) {
+  return Math.abs(x2-x1) + Math.abs(y2-y1);
+}
+
+// const average = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length;
 
 suite('Academy tests', function () {
   this.timeout(TIMEOUT * 60 * 1000);
@@ -19,6 +27,8 @@ suite('Academy tests', function () {
   test('setup academy and train students', async function () {
     let actor = {x: 1, y: 1};
     let target = {x: 5, y: 7};
+    let distance = jumpDistance(actor.x, actor.y, target.x, target.y);
+    let steps = 0;
 
     const modelFitConfig = {              // Exactly the same idea here by using tfjs's model's
         epochs: 1,                        // fit config.
@@ -26,7 +36,7 @@ suite('Academy tests', function () {
     };
 
     const numActions = 4;
-    const inputSize = 4;                
+    const inputSize = 4;       
     const temporalWindow = 1;             // The window of data which will be sent yo your agent. For instance the x previous inputs, and what actions the agent took
 
     const totalInputSize = inputSize * temporalWindow + numActions * temporalWindow + inputSize;
@@ -48,7 +58,7 @@ suite('Academy tests', function () {
     const teacherConfig = {
       lessonsQuantity: 10000,
       lessonLength: 20,                
-      lessonsWithRandom: 0,
+      lessonsWithRandom: 2,
       epsilon: 0.5,
       epsilonDecay: 0.995,                
       epsilonMin: 0.05,
@@ -71,10 +81,7 @@ suite('Academy tests', function () {
 
     academy.assignTeacherToAgent(agent, teacher);
 
-    var lastUpdate = Date.now();
-
-    let steps = 0;
-    while((actor.x == target.x && actor.y == target.y) == false) {
+    while(true) {
       // Gather inputs
       let distance_before = Math.hypot(target.x-actor.x, target.y-actor.y);
       let inputs = [actor.x, actor.y, target.x, target.y];
@@ -86,37 +93,39 @@ suite('Academy tests', function () {
       if(result !== undefined) {
         steps++;
         var action = result.get(agent);
-        switch (action) {
-          case 0:
-            actor.x++;
-            break;
-          case 1:
-            actor.x--;
-            break;
-          case 2:
-            actor.y++;
-            break;
-          case 3:
-            actor.y--;
-            break;
-          default:
-            break;
-        }
+        if(action === 0) 
+          actor.x++;
+        else if(action === 1) 
+          actor.x--;
+        else if(action === 2) 
+          actor.y++;
+        else if(action === 3) 
+          actor.y--;
       }
 
-      //TODO: Create a bounds that the actor can not moved beyond...
+      if(actor.x < 0) 
+        actor.x = 0;
+      else if(actor.x > MAP_SIZE) 
+        actor.x = MAP_SIZE;
+      
+      if(actor.y < 0)
+        actor.y = 0;
+      else if(actor.y > MAP_SIZE) 
+        actor.y = MAP_SIZE;
 
       let distance_after = Math.hypot(target.x-actor.x, target.y-actor.y)
-      let reward = (distance_before == distance_after) ? -0.5 : distance_before - distance_after;
+      let reward = (distance_before == distance_after) ? -0.01 : distance_before - distance_after;
       academy.addRewardToAgent(agent, reward);
-      // console.info("Actor", `Location: (${actor.x}, ${actor.y}) Reward: ${reward}`);
+      // console.info(`Target: (${target.x}, ${target.y}) Location: (${actor.x}, ${actor.y}) Reward: ${reward}`);
+
+      if(actor.x === target.x && actor.y === target.y) {
+        console.info(`Target: ${distance} Steps: ${steps}`);
+
+        target = { x: randomPoint(), y: randomPoint() };
+        steps = 0;
+        distance = jumpDistance(actor.x, actor.y, target.x, target.y);
+      }
     }
-
-    var now = Date.now();
-    var dt = Math.abs(now - lastUpdate) / 1000;
-
-    console.info(`Actor took ${(dt % 60)}s and ${steps} steps.`);
-
   });
 
   teardown(async function () {
