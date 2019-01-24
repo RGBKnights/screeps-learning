@@ -119,7 +119,7 @@ suite('Academy tests', function () {
       // console.info(`Target: (${target.x}, ${target.y}) Location: (${actor.x}, ${actor.y}) Reward: ${reward}`);
 
       if(actor.x === target.x && actor.y === target.y) {
-        console.info(`Target: ${distance} Steps: ${steps}`);
+        console.info(`Target: ${distance.toString().padStart(2, "0")} Steps: ${steps.toString().padStart(2, "0")} Delta: ${(steps-distance).toString().padStart(2, "0")}`);
 
         target = { x: randomPoint(), y: randomPoint() };
         steps = 0;
