@@ -30,8 +30,8 @@ suite('Academy tests', function () {
     let distance = jumpDistance(actor.x, actor.y, target.x, target.y);
     let steps = 0;
 
-    const modelFitConfig = {              // Exactly the same idea here by using tfjs's model's
-        epochs: 1,                        // fit config.
+    const modelFitConfig = {
+        epochs: 1,
         stepsPerEpoch: 16
     };
 
