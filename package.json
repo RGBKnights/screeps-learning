@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "mocha -u tdd --require @babel/polyfill --require @babel/register --exit"
+    "test": "mocha --require @babel/polyfill --require @babel/register --exit"
   },
   "keywords": [],
   "author": "Jamie Webster <master@rgbknights.com> (venatiostudios.com)",

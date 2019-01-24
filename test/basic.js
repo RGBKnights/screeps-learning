@@ -7,16 +7,14 @@ import { ScreepsServer, stdHooks } from 'screeps-server-mockup'
 // Dirty hack to prevent driver from flooding error messages
 stdHooks.hookWrite();
 
-const TIMEOUT = 30; // Seconds
-const SLOW = 10;    // Seconds
+describe('Basics tests', function () {
+  this.timeout("10s");
+  this.slow("5s");
 
-suite('Basics tests', function () {
-  this.timeout(TIMEOUT * 1000);
-  this.slow(SLOW * 1000);
   // Server variable used for the tests
   let server = null;
 
-  test('Starting server and running a few ticks without error', async function () {
+  it('Starting server and running a few ticks without error', async function () {
     server = new ScreepsServer();
     await server.start();
     for (let i = 0; i < 5; i += 1) {
@@ -25,7 +23,7 @@ suite('Basics tests', function () {
     server.stop();
   });
 
-  teardown(async function () {
+  after(async function () {
     // Make sure that server is stopped in case something went wrong
     if (_.isFunction(server.stop)) {
         server.stop();
