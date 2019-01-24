@@ -5,7 +5,6 @@ import assert from 'assert'
 // import { ScreepsServer, stdHooks } from 'screeps-server-mockup'
 import { NeuralNetwork, Model, Academy } from "reimprovejs/dist/reimprove.js"
 
-
 const MAP_SIZE = 10;
 
 function randomPoint()

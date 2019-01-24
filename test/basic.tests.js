@@ -23,7 +23,7 @@ describe('Basics tests', function () {
     server.stop();
   });
 
-  after(async function () {
+  afterEach(async function () {
     // Make sure that server is stopped in case something went wrong
     if (_.isFunction(server.stop)) {
         server.stop();
