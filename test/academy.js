@@ -35,9 +35,10 @@ suite('Academy tests', function () {
         stepsPerEpoch: 16
     };
 
-    const numActions = 4;
-    const inputSize = 4;       
-    const temporalWindow = 1;             // The window of data which will be sent yo your agent. For instance the x previous inputs, and what actions the agent took
+    const numActions = 8;
+    const inputSize = 4;
+    // The window of data which will be sent yo your agent. For instance the x previous inputs, and what actions the agent took  
+    const temporalWindow = 1;
 
     const totalInputSize = inputSize * temporalWindow + numActions * temporalWindow + inputSize;
 
@@ -86,6 +87,8 @@ suite('Academy tests', function () {
       let distance_before = Math.hypot(target.x-actor.x, target.y-actor.y);
       let inputs = [actor.x, actor.y, target.x, target.y];
 
+      assert.equal(inputs.length, inputSize, "The Input Size dose not match the Inputs Array length");
+
       // Step the learning
       let result = await academy.step([{teacherName: teacher, agentsInput: inputs}]);
 
@@ -93,14 +96,27 @@ suite('Academy tests', function () {
       if(result !== undefined) {
         steps++;
         var action = result.get(agent);
-        if(action === 0) 
-          actor.x++;
-        else if(action === 1) 
-          actor.x--;
-        else if(action === 2) 
+        if(action === 0) {
+          actor.x++; // Right
+        } else if(action === 1) {
+          actor.x--; // Left
+        } else if(action === 2) {
+          actor.y++; // Down
+        } else if(action === 3) {
+          actor.y--; // Up
+        } else if(action === 4) {
+          actor.x++; // Right Down
           actor.y++;
-        else if(action === 3) 
+        } else if(action === 5) {
+          actor.x--; // Left Up
           actor.y--;
+        } else if(action === 6) {
+          actor.x++; // Right Up
+          actor.y--;
+        } else if(action === 7) {
+          actor.x--; // Left Down
+          actor.y++;
+        }
       }
 
       if(actor.x < 0) 
@@ -119,7 +135,7 @@ suite('Academy tests', function () {
       // console.info(`Target: (${target.x}, ${target.y}) Location: (${actor.x}, ${actor.y}) Reward: ${reward}`);
 
       if(actor.x === target.x && actor.y === target.y) {
-        console.info(`Target: ${distance.toString().padStart(2, "0")} Steps: ${steps.toString().padStart(2, "0")} Delta: ${(steps-distance).toString().padStart(2, "0")}`);
+        console.info(`Target: ${distance} Steps: ${steps} Delta: ${(steps-distance)}`);
 
         target = { x: randomPoint(), y: randomPoint() };
         steps = 0;
