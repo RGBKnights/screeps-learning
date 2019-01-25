@@ -7,7 +7,7 @@ import { ScreepsServer, stdHooks } from 'screeps-server-mockup'
 // Dirty hack to prevent driver from flooding error messages
 stdHooks.hookWrite();
 
-describe('Basics tests', function () {
+describe.skip('Basics tests', function () {
   this.timeout("10s");
   this.slow("5s");
 

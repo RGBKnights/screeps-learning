@@ -3,7 +3,7 @@ import { TerrainMatrix } from 'screeps-server-mockup'
 
 const TerrainTypes = { Plain: 'plain', Wall: 'wall', Swamp: 'swamp' };
 
-describe('TerrainMatrix tests', function () {
+describe.skip('TerrainMatrix tests', function () {
   this.timeout("10s");
   this.slow("5s");
 

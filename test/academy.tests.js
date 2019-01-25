@@ -29,7 +29,7 @@ describe('Academy tests', function () {
   this.timeout("60s");
 
   it('setup academy and train students', async function () {
-    this.skip(); // skip this test for now
+    // this.skip(); // skip this test for now
 
     let actor = {x: 1, y: 1};
     let target = {x: 5, y: 7};
@@ -64,7 +64,7 @@ describe('Academy tests', function () {
       limitBounds(actor);
 
       let distance_after = Math.hypot(target.x-actor.x, target.y-actor.y)
-      let reward = (distance_before == distance_after) ? -0.01 : distance_before - distance_after;
+      let reward = (distance_before == distance_after) ? -1 : distance_before - distance_after;
       school.reward(reward);
 
       // console.info(`Target: (${target.x}, ${target.y}) Location: (${actor.x}, ${actor.y}) Reward: ${reward}`);

@@ -7,7 +7,7 @@ import { ScreepsServer, TerrainMatrix, stdHooks } from 'screeps-server-mockup'
 // Dirty hack to prevent driver from flooding error messages
 stdHooks.hookWrite();
 
-describe('World tests', function () {
+describe.skip('World tests', function () {
   this.timeout("10s");
   this.slow("5s");
 
