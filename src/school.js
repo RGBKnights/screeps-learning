@@ -81,4 +81,12 @@ export class School {
       return null;
     }
   }
+
+  async exportModel() {
+    await this.model.export('E:/workspace/screeps-learning/tmp/test-model-v1', 'file');
+  }
+
+  async loadModel() {
+    this.model = await Model.loadFromFile('E:/workspace/screeps-learning/tmp/test-model-v1');
+  }
 }
